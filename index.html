@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Salarios </title>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        h1 {
+            background-color: #0066cc;
+            color: white;
+            padding: 10px;             
+	    border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Salarios y Boleto de Ornato</h1>
+    <form id="employee-form">
+        <label for="numEmpleados">Numero de Empleados:</label>
+        <input type="number" id="numEmpleados" required><br>
+
+        <!-- Corrección: Agregar el evento onclick en el botón -->
+        <button type="button" onclick="agregarEmpleados()">Agregar Empleados</button>
+
+        <div id="empleados"></div>
+
+        <h2>Resultados:</h2>
+        <div id="resultados"></div>
+        <p>Suma de Salarios: <span id="sumaSalarios"></span></p>
+        <p>Promedio de Salarios: <span id="promedioSalarios"></span></p>
+        <!-- Agregamos el botón de cálculo -->
+        <button type="button" onclick="calcularSalarios()">Calcular Salarios</button>
+    </form>
+
+    <script>
+        function agregarEmpleados() {
+            const numEmpleados = parseInt(document.getElementById('numEmpleados').value);
+            let empleadoHtml = '';
+
+            for (let i = 1; i <= numEmpleados; i++) {
+                empleadoHtml += `
+                <h2>Empleado ${i}:</h2>
+                <label for="nombre${i}">Nombre del Empleado:</label>
+                <input type="text" id="nombre${i}" required><br>
+
+                <label for="salarioMensual${i}">Salario Mensual:</label>
+                <input type="number" id="salarioMensual${i}" required><br>
+
+                <label for="horasExtras${i}">Horas Extras (colocar 0 si no hay):</label>
+                <input type="number" id="horasExtras${i}" required><br><br>`;
+            }
+
+            document.getElementById('empleados').innerHTML = `
+                <div id="empleados-container">
+                    ${empleadoHtml}
+                </div>`;
+        }
+
+        function calcularSalarios() {
+            const numEmpleados = parseInt(document.getElementById('numEmpleados').value);
+            let sumaTotalSalarios = 0;
+
+            const resultadosDiv = document.getElementById('resultados');
+            resultadosDiv.innerHTML = '';
+
+            for (let i = 1; i <= numEmpleados; i++) {
+                const nombre = document.getElementById(`nombre${i}`).value;
+                const salarioMensual = parseFloat(document.getElementById(`salarioMensual${i}`).value);
+                const horasExtras = parseFloat(document.getElementById(`horasExtras${i}`).value);
+
+               
+                const salarioBase = salarioMensual;
+            
+                const igss = salarioBase * 0.0483;
+
+                let boletoOrnato = 0;
+                if (salarioMensual >= 500.01 && salarioMensual <= 1000.00) {
+                    boletoOrnato = 4.00;
+                } else if (salarioMensual >= 1000.01 && salarioMensual <= 3000.00) {
+                    boletoOrnato = 10.00;
+                } else if (salarioMensual >= 3000.01 && salarioMensual <= 6000.00) {
+                    boletoOrnato = 15.00;
+                } else if (salarioMensual >= 6000.01 && salarioMensual <= 9000.00) {
+                    boletoOrnato = 75.00;
+                } else if (salarioMensual >= 9000.01 && salarioMensual <= 12000.00) {
+                    boletoOrnato = 100.00;
+                } else if (salarioMensual >= 12000.01) {
+                    boletoOrnato = 150.00;
+                }
+
+
+                const salarioRecibir = salarioBase - igss;
+
+                sumaTotalSalarios += salarioRecibir;
+
+                const resultadoHtml = `
+                    <div>
+                        <h3>Empleado: ${nombre}</h3>
+                        <p>Salario Base: Q${salarioBase.toFixed(2)}</p>
+                        <p>Bonificación: Q250.00</p>
+                        <p>IGSS: Q${igss.toFixed(2)}</p>
+                        <p>Salario a Recibir: Q${salarioRecibir.toFixed(2)}</p>
+                        <p>Boleto de Ornato: Q${boletoOrnato.toFixed(2)}</p>
+                    </div>
+                `;
+                resultadosDiv.innerHTML += resultadoHtml;
+            }
+
+            const promedioSalarios = sumaTotalSalarios / numEmpleados;
+            document.getElementById('sumaSalarios').textContent = sumaTotalSalarios.toFixed(2);
+            document.getElementById('promedioSalarios').textContent = promedioSalarios.toFixed(2);
+        }
+    </script>
+</body>
+</html>
